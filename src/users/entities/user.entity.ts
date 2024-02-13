@@ -21,4 +21,7 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @Column({ default: 'user' })
+  role: string;
 }

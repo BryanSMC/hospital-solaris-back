@@ -8,10 +8,14 @@ import { registerDto } from './dto/register.dto';
 
 import * as bcryptjs from 'bcryptjs';
 import { loginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly UserService: UsersService) {}
+  constructor(
+    private readonly UserService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async register({ nombre, correo, contraseña }: registerDto) {
     const user = await this.UserService.findOneByEmail(correo);
@@ -41,6 +45,12 @@ export class AuthService {
       throw new UnauthorizedException('La contraseña no coincide');
     }
 
-    return user;
+    const payload = { email: user.correo };
+    const token = await this.jwtService.signAsync(payload);
+
+    return {
+      token,
+      correo,
+    };
   }
 }
