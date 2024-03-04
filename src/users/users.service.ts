@@ -20,6 +20,13 @@ export class UsersService {
     return await this.userRepository.findOneBy({ correo });
   }
 
+  async findByEmailWithPassword(correo: string) {
+    return await this.userRepository.findOne({
+      where: { correo },
+      select: ['id', 'nombre', 'correo', 'contraseña'],
+    });
+  }
+
   async findAll() {
     return await this.userRepository.find();
   }

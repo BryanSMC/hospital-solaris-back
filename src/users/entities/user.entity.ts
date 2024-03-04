@@ -16,12 +16,12 @@ export class User {
   @Column({ unique: true, nullable: true })
   correo: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false, select: false })
   contraseña: string;
+
+  @Column({ default: 'doctor' })
+  rol: string;
 
   @DeleteDateColumn()
   deletedAt: Date;
-
-  @Column({ default: 'user' })
-  role: string;
 }

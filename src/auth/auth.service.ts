@@ -24,15 +24,20 @@ export class AuthService {
       throw new BadRequestException('El usuario ya existe');
     }
 
-    return await this.UserService.create({
+    await this.UserService.create({
       nombre,
       correo,
       contraseña: await bcryptjs.hash(contraseña, 12),
     });
+
+    return {
+      nombre,
+      correo,
+    };
   }
 
   async login({ correo, contraseña }: loginDto) {
-    const user = await this.UserService.findOneByEmail(correo);
+    const user = await this.UserService.findByEmailWithPassword(correo);
     if (!user) {
       throw new UnauthorizedException('El correo no coincide');
     }
@@ -45,12 +50,16 @@ export class AuthService {
       throw new UnauthorizedException('La contraseña no coincide');
     }
 
-    const payload = { email: user.correo };
+    const payload = { email: user.correo, rol: user.rol };
     const token = await this.jwtService.signAsync(payload);
 
     return {
       token,
       correo,
     };
+  }
+
+  async panel({ correo }: { correo: string; rol: string }) {
+    return await this.UserService.findOneByEmail(correo);
   }
 }
